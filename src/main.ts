@@ -1,4 +1,4 @@
-import { Component, NgModule, Input, EventEmitter, Output } from "@angular/core";
+import { Component, NgModule, Input, EventEmitter, Output, ViewEncapsulation } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
@@ -24,8 +24,12 @@ template: `
     <div class = "container">
     <div class="card card-block">
   <div class="card-body">
-    <h5 class="card-title">{{ data.setup }}</h5>
-  <p class = "card-text" [hidden]=data.hide>{{ data.punchline }}</p>
+    <h5 class="card-title">
+    <ng-content select =".setup"></ng-content>
+    </h5>
+  <p class = "card-text" [hidden]=data.hide>
+  <ng-content select=".punchline"></ng-content>
+  </p>
     <button class="btn btn-danger btn-sm" (click)=data.toggle()>Toggle</button>
   </div>
 </div>
@@ -38,27 +42,15 @@ class JokeComponent {
 
 @Component({
   selector: 'joke-form', 
-  template: `<div class = container>
-<div class="card card-block">
-  <h4 class="card-title">Create Joke</h4>
-  <div class = card-body>
-  <div class="form-group">
-    <input type="text"
-           class="form-control"
-           placeholder="Enter the setup"
-           #setup>
-  </div>
-  <div class="form-group">
-    <input type="text"
-           class="form-control"
-           placeholder="Enter the punchline"
-           #punchline>
-  </div>
-    <button class="btn btn-danger btn-sm" (click)="createJoke(setup.value, punchline.value)">Create</button>
-    </div>
-</div>
-</div>
-`
+  templateUrl: 'joke-form-component.html',
+  styles: [
+    `
+   .card{
+    background-color:grey;
+   }
+   `
+  ],
+  encapsulation: ViewEncapsulation.None
 })
 
 class JokeFormComponent{
@@ -73,7 +65,10 @@ class JokeFormComponent{
   selector: 'joke-list',
   template:` 
   <joke-form (jokeCreated)="addJoke($event)"></joke-form>
-  <joke *ngFor = "let j of jokes" [joke] = "j"></joke>`
+  <joke *ngFor = "let j of jokes" [joke] = "j">
+  <span class = "setup">{{j.setup}}?</span>
+  <h1 class = "punchline"> {{ j.punchline }}</h1> 
+  </joke>`
 })
 
 class JokeListComponent { 
